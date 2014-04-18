@@ -32,9 +32,9 @@
 
 /**
  Factory method to get this party started. Assign this to your window as the rootViewController.
- @param the navigation controller of the first view to display.
+ @param the view controller of the first view to display (it will be placed in a navigation controller).
  @return a newly created instance of DCSideNavViewController.
  */
-+(DCSideNavViewController*)navWithController:(UINavigationController*)navBar;
++(DCSideNavViewController*)navWithController:(UIViewController*)vc;
 
 @end

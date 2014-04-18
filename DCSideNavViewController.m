@@ -121,7 +121,7 @@ static CGFloat barWidth = 88;
     DCNavTabView *tabView = nil;
     if([sender isKindOfClass:[UIGestureRecognizer class]])
     {
-        UIView *view = sender;
+        UIView *view = [sender view];
         tabView = (DCNavTabView*)view.superview;
     }
     else
@@ -148,7 +148,13 @@ static CGFloat barWidth = 88;
     [self.view addSubview:self.navBar.view];
     self.navBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     CGFloat left = self.tabBarView.frame.size.width;
-    self.navBar.view.frame = CGRectMake(left, 0, self.view.frame.size.width-(left), self.view.frame.size.height);
+    CGRect frame = self.view.frame;
+    if(UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
+    {
+        frame.size.width = self.view.frame.size.height;
+        frame.size.height = self.view.frame.size.width;
+    }
+    self.navBar.view.frame = CGRectMake(left, 0, frame.size.width-(left), frame.size.height);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)setHeaderItem:(DCNavTab *)headerItem
@@ -180,10 +186,10 @@ static CGFloat barWidth = 88;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - factory methods
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-+(DCSideNavViewController*)navWithController:(UINavigationController*)navBar
++(DCSideNavViewController*)navWithController:(UIViewController*)vc
 {
-    DCSideNavViewController *side = [[DCSideNavViewController alloc] init];
-    side.navBar = navBar;
+    UINavigationController *newNavBar = [[UINavigationController alloc] initWithRootViewController:vc];
+    DCSideNavViewController *side = [[DCSideNavViewController alloc] initWithNav:newNavBar];
     return side;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////

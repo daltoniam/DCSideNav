@@ -48,7 +48,9 @@
 -(void)setTab:(DCNavTab *)tab
 {
     _tab = tab;
+    [self.customView removeFromSuperview];
     self.customView = tab.view;
+    [self addSubview:self.customView];
     if(!self.customView)
     {
         if(!self.buttonView)
