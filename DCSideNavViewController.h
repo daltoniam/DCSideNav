@@ -37,4 +37,11 @@
  */
 +(DCSideNavViewController*)navWithController:(UIViewController*)vc;
 
+/**
+ set the items and an index to select.
+ @param the items you want to set.
+ @param the index tab you want to select
+ */
+-(void)setItems:(NSArray *)items index:(NSInteger)index;
+
 @end

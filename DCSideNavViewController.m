@@ -72,6 +72,9 @@ static CGFloat barWidth = 88;
         [view removeFromSuperview];
     if(!self.tabViews)
         self.tabViews = [NSMutableArray new];
+    else {
+        [self.tabViews removeAllObjects];
+    }
     CGFloat pad = 15;
     if(UIInterfaceOrientationIsLandscape(orient) && self.items.count > 8 && self.footerItem) //too many tabs...
         pad = 5;
@@ -171,17 +174,24 @@ static CGFloat barWidth = 88;
     [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation]];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
--(void)setItems:(NSArray *)items
+-(void)setItems:(NSArray *)items index:(NSInteger)index
 {
     _items = items;
     for(DCNavTab *tab in items)
         tab.isHeader = NO;
     [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation]];
-    if(self.tabViews.count > 0)
+    if(self.tabViews.count > index)
     {
-        DCNavTabView *tabView = self.tabViews[0];
+        DCNavTabView *tabView = self.tabViews[index];
         [tabView setSelected:YES];
+        UIViewController *vc = [[tabView.tab.vcClass alloc] init];
+        [self switchTab:vc];
     }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+-(void)setItems:(NSArray *)items
+{
+    [self setItems:items index:0];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark - factory methods
