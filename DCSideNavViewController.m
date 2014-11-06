@@ -53,7 +53,7 @@ static CGFloat barWidth = 88;
     [self.view addSubview:self.navBar.view];
     self.navBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.navBar.view.frame = CGRectMake(left, top, self.view.frame.size.width-(left), self.view.frame.size.height);
-    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation]];
+    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation] updatedSelected:NO];
     if(self.tabViews.count > 0)
     {
         DCNavTabView *tabView = self.tabViews[0];
@@ -63,13 +63,23 @@ static CGFloat barWidth = 88;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    [self layoutTabs:toInterfaceOrientation];
+    [self layoutTabs:toInterfaceOrientation updatedSelected:YES];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
--(void)layoutTabs:(UIInterfaceOrientation)orient
+-(void)layoutTabs:(UIInterfaceOrientation)orient updatedSelected:(BOOL)update
 {
-    for(UIView *view in self.tabViews)
+    NSInteger index = 0;
+    NSInteger i = 0;
+    for(DCNavTabView *view in self.tabViews) {
+        if(view.buttonView.selected) {
+            index = i;
+        }
         [view removeFromSuperview];
+        i++;
+    }
+    if(self.headerItem) {
+        index--;
+    }
     if(!self.tabViews)
         self.tabViews = [NSMutableArray new];
     else {
@@ -88,17 +98,27 @@ static CGFloat barWidth = 88;
         headerView.frame = CGRectMake(left, top, barWidth, tabHeight-top);
     }
     top = tabHeight + top;
+    i = 0;
     for(DCNavTab *tab in self.items)
     {
         DCNavTabView *tabView = [self createTabView:tab];
         tabView.frame = CGRectMake(left, top, barWidth, tabHeight);
         top += tabHeight + pad;
+        if(i == index && update) {
+            [tabView setSelected:YES];
+        }
+        i++;
     }
     if(self.footerItem)
     {
         top = self.view.frame.size.height;
-        if(UIInterfaceOrientationIsLandscape(orient))
+        BOOL isLandscape = UIInterfaceOrientationIsLandscape(orient);
+        BOOL statusLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
+        if(isLandscape && !statusLandscape)
             top = self.view.frame.size.width;
+        else if(statusLandscape && !isLandscape) {
+            top = self.view.frame.size.width;
+        }
         DCNavTabView *footerView = [self createTabView:self.footerItem];
         footerView.frame = CGRectMake(left, top-tabHeight, barWidth, tabHeight);
     }
@@ -152,11 +172,11 @@ static CGFloat barWidth = 88;
     self.navBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     CGFloat left = self.tabBarView.frame.size.width;
     CGRect frame = self.view.frame;
-    if(UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
-    {
-        frame.size.width = self.view.frame.size.height;
-        frame.size.height = self.view.frame.size.width;
-    }
+    //    if(UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
+    //    {
+    //        frame.size.width = self.view.frame.size.height;
+    //        frame.size.height = self.view.frame.size.width;
+    //    }
     self.navBar.view.frame = CGRectMake(left, 0, frame.size.width-(left), frame.size.height);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,14 +184,14 @@ static CGFloat barWidth = 88;
 {
     _headerItem = headerItem;
     _headerItem.isHeader = YES;
-    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation]];
+    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation] updatedSelected:NO];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)setFooterItem:(DCNavTab *)footerItem
 {
     _footerItem = footerItem;
     _footerItem.isHeader = NO;
-    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation]];
+    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation] updatedSelected:NO];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 -(void)setItems:(NSArray *)items index:(NSInteger)index
@@ -179,7 +199,7 @@ static CGFloat barWidth = 88;
     _items = items;
     for(DCNavTab *tab in items)
         tab.isHeader = NO;
-    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation]];
+    [self layoutTabs:[[UIApplication sharedApplication] statusBarOrientation] updatedSelected:NO];
     if(self.tabViews.count > index)
     {
         DCNavTabView *tabView = self.tabViews[index];
