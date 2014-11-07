@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "DCSideNav"
-  s.version      = "0.1.0"
+  s.version      = "0.1.1"
   s.summary      = "Custom Navigation for iPad. Similar to iPad twitter app navigation"
   s.homepage     = "https://github.com/daltoniam/DCSideNav"
   s.license      = 'Apache License, Version 2.0'

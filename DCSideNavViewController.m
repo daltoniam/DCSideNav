@@ -116,7 +116,7 @@ static CGFloat barWidth = 88;
         BOOL statusLandscape = UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]);
         if(isLandscape && !statusLandscape)
             top = self.view.frame.size.width;
-        else if(statusLandscape && !isLandscape) {
+        else if(statusLandscape && !isLandscape && [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
             top = self.view.frame.size.width;
         }
         DCNavTabView *footerView = [self createTabView:self.footerItem];
@@ -172,11 +172,13 @@ static CGFloat barWidth = 88;
     self.navBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     CGFloat left = self.tabBarView.frame.size.width;
     CGRect frame = self.view.frame;
-    //    if(UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
-    //    {
-    //        frame.size.width = self.view.frame.size.height;
-    //        frame.size.height = self.view.frame.size.width;
-    //    }
+    if([[[UIDevice currentDevice] systemVersion] floatValue] < 8.0) {
+        if(UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]))
+        {
+            frame.size.width = self.view.frame.size.height;
+            frame.size.height = self.view.frame.size.width;
+        }
+    }
     self.navBar.view.frame = CGRectMake(left, 0, frame.size.width-(left), frame.size.height);
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
