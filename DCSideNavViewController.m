@@ -118,6 +118,9 @@ static CGFloat barWidth = 88;
             top = self.view.frame.size.width;
         else if(statusLandscape && !isLandscape && [[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0) {
             top = self.view.frame.size.width;
+        } else if(statusLandscape && isLandscape && [[[UIDevice currentDevice] systemVersion] floatValue] < 8.0) {
+            //edge case on iOS7 starting in landscape
+            top = self.view.frame.size.width;
         }
         DCNavTabView *footerView = [self createTabView:self.footerItem];
         footerView.frame = CGRectMake(left, top-tabHeight, barWidth, tabHeight);
